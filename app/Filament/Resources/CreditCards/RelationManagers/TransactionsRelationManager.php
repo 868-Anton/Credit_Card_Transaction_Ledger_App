@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CreditCards\RelationManagers;
 
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
+use App\Helpers\Money;
 use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
@@ -21,10 +22,6 @@ class TransactionsRelationManager extends RelationManager
     protected static string $relationship = 'transactions';
 
     /* ─── Form ─── */
-    // Seven fields. The key behaviour: when status is Posted,
-    // amount and transacted_at become read-only. You can still
-    // change notes or external_ref on a posted transaction, but
-    // the financial fields are locked.
 
     public function form(Schema $schema): Schema
     {
@@ -33,19 +30,22 @@ class TransactionsRelationManager extends RelationManager
                 ->label('Date')
                 ->required()
                 ->default('today')
+                ->displayFormat('F j, Y')
+                ->helperText('The date the transaction occurred on your statement.')
                 ->disabled(fn (Get $get) => $get('status') === TransactionStatus::Posted->value),
 
             TextInput::make('description')
                 ->required()
                 ->maxLength(255)
-                ->placeholder('e.g. Amazon, Grocery Store'),
+                ->placeholder('e.g. Amazon, Grocery Store')
+                ->helperText('A short label for this transaction. Matches what appears on your statement.'),
 
             TextInput::make('amount')
                 ->required()
                 ->numeric()
                 ->prefix('$')
                 ->placeholder('0.00')
-                ->helperText('Enter the absolute value. The sign is set automatically by the type.')
+                ->helperText('Enter the absolute value. The sign is set automatically based on the type you choose.')
                 ->disabled(fn (Get $get) => $get('status') === TransactionStatus::Posted->value),
 
             Select::make('type')
@@ -53,24 +53,25 @@ class TransactionsRelationManager extends RelationManager
                 ->options(TransactionType::class)
                 ->enum(TransactionType::class)
                 ->default(TransactionType::Charge)
-                ->helperText('Determines the sign: Charge/Fee = positive, Payment/Refund = negative.'),
+                ->helperText('Charge and Fee are positive. Payment and Refund are negative. The model corrects the sign automatically.'),
 
             Select::make('status')
                 ->required()
                 ->options(TransactionStatus::class)
                 ->enum(TransactionStatus::class)
                 ->default(TransactionStatus::Pending)
-                ->helperText('Pending → Posted is one-way. The model enforces this.'),
+                ->helperText('Pending = not yet confirmed by your bank. Posted = confirmed. This transition is one-way — you cannot revert a Posted transaction.'),
 
             Textarea::make('notes')
                 ->rows(2)
-                ->placeholder('Optional notes about this transaction.'),
+                ->placeholder('Optional notes about this transaction.')
+                ->helperText('Free text. Use this for categories, reminders, or anything else.'),
 
             TextInput::make('external_ref')
                 ->label('Reference #')
                 ->maxLength(255)
                 ->placeholder('e.g. TXN-20250131-001')
-                ->helperText('Your bank or card issuer reference number, if any.'),
+                ->helperText('Your bank or card issuer reference number. Useful when reconciling against statements.'),
         ]);
     }
 
@@ -82,18 +83,22 @@ class TransactionsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('transacted_at')
                     ->label('Date')
-                    ->date('M j, Y')
-                    ->sortable(),
+                    ->date('F j, Y')
+                    ->sortable()
+                    ->width('8rem'),
 
                 TextColumn::make('description')
                     ->searchable()
-                    ->wrap(),
+                    ->limit(40)
+                    ->tooltip(fn (string $state): string => $state),
 
                 TextColumn::make('amount')
                     ->sortable()
                     ->alignEnd()
-                    ->formatStateUsing(fn (string $state): string => '$'.number_format((float) $state, 2))
-                    ->color(fn (string $state): string => (float) $state < 0 ? 'success' : 'danger'),
+                    ->width('7rem')
+                    ->formatStateUsing(fn (string $state): string => Money::format($state))
+                    ->color(fn (string $state): string => (float) $state < 0 ? 'success' : 'danger')
+                    ->tooltip('Positive = charge or fee. Negative = payment or refund.'),
 
                 TextColumn::make('type')
                     ->badge()
@@ -102,19 +107,22 @@ class TransactionsRelationManager extends RelationManager
                         TransactionType::Fee => 'warning',
                         TransactionType::Payment => 'success',
                         TransactionType::Refund => 'info',
-                    }),
+                    })
+                    ->tooltip('Determines the sign of the amount.'),
 
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (TransactionStatus $state): string => match ($state) {
                         TransactionStatus::Pending => 'warning',
                         TransactionStatus::Posted => 'success',
-                    }),
+                    })
+                    ->tooltip('Pending → Posted is one-way. Posted transactions cannot revert.'),
 
                 TextColumn::make('external_ref')
                     ->label('Ref #')
                     ->placeholder('—')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->tooltip('Bank or card issuer reference number.'),
             ])
             ->defaultSort('transacted_at', 'desc')
             ->headerActions([

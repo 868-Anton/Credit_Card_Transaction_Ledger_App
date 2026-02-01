@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Helpers\Money;
 use App\Models\CreditCard;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -30,21 +31,22 @@ class AllCardsOverviewWidget extends BaseWidget
         }
 
         return [
-            Stat::make('Total Posted', '$'.number_format((float) $totalPosted, 2))
+
+            Stat::make('Total Posted', Money::format($totalPosted))
                 ->description('Confirmed across all cards')
                 ->icon('heroicon-o-check-circle'),
 
-            Stat::make('Total Pending', '$'.number_format((float) $totalPending, 2))
+            Stat::make('Total Pending', Money::format($totalPending))
                 ->description('Awaiting confirmation')
                 ->icon('heroicon-o-clock')
                 ->color('warning'),
 
-            Stat::make('Total TRUE Balance', '$'.number_format((float) $totalBalance, 2))
+            Stat::make('Total TRUE Balance', Money::format($totalBalance))
                 ->description('What you owe across all cards')
                 ->icon('heroicon-o-banknotes')
                 ->color('primary'),
 
-            Stat::make('Total Available Credit', '$'.number_format((float) $totalAvailable, 2))
+            Stat::make('Total Available Credit', Money::format($totalAvailable))
                 ->description('Remaining across all cards')
                 ->icon('heroicon-o-credit-card')
                 ->color($this->portfolioColor($totalAvailable, $totalLimit)),

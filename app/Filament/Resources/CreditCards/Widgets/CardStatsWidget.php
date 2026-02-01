@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CreditCards\Widgets;
 
+use App\Helpers\Money;
 use App\Models\CreditCard;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -38,40 +39,21 @@ class CardStatsWidget extends BaseWidget
         $available = $this->record->availableCredit();
 
         return [
-            // ── Posted Balance ──
-            // What has already cleared with the bank.
-            // Always displayed in the default (neutral) color.
-            Stat::make('Posted Balance', '$'.number_format((float) $posted, 2))
+            Stat::make('Posted Balance', Money::format($posted))
                 ->description('Confirmed transactions')
                 ->icon('heroicon-o-check-circle'),
 
-            // ── Pending Charges ──
-            // Transactions recorded but not yet confirmed.
-            // Shown in warning (amber) so the user knows these
-            // numbers are not yet final.
-            Stat::make('Pending Charges', '$'.number_format((float) $pending, 2))
+            Stat::make('Pending Charges', Money::format($pending))
                 ->description('Awaiting bank confirmation')
                 ->icon('heroicon-o-clock')
                 ->color('warning'),
 
-            // ── TRUE Balance ──
-            // The real number: what you actually owe right now.
-            // This is the headline stat — it gets the primary
-            // visual treatment. Color is neutral because the
-            // balance itself is not inherently good or bad.
-            Stat::make('TRUE Balance', '$'.number_format((float) $balance, 2))
+            Stat::make('TRUE Balance', Money::format($balance))
                 ->description('Posted + Pending')
                 ->icon('heroicon-o-banknotes')
                 ->color('primary'),
 
-            // ── Available Credit ──
-            // How much room is left before the limit.
-            // This is the one stat that changes color based on
-            // the value — three tiers:
-            //   success (green)  = healthy headroom
-            //   warning (amber)  = under $500, getting close
-            //   danger  (red)    = negative, you are over limit
-            Stat::make('Available Credit', '$'.number_format((float) $available, 2))
+            Stat::make('Available Credit', Money::format($available))
                 ->description('Credit limit minus TRUE Balance')
                 ->icon('heroicon-o-credit-card')
                 ->color($this->availableCreditColor($available)),
