@@ -5,6 +5,7 @@ namespace App\Filament\Resources\CreditCards;
 use App\Filament\Resources\CreditCards\Pages\CreateCreditCard;
 use App\Filament\Resources\CreditCards\Pages\EditCreditCard;
 use App\Filament\Resources\CreditCards\Pages\ListCreditCards;
+use App\Filament\Resources\CreditCards\RelationManagers\TransactionsRelationManager;
 use App\Filament\Resources\CreditCards\Schemas\CreditCardForm;
 use App\Filament\Resources\CreditCards\Tables\CreditCardsTable;
 use App\Models\CreditCard;
@@ -36,7 +37,7 @@ class CreditCardResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            TransactionsRelationManager::class,
         ];
     }
 
