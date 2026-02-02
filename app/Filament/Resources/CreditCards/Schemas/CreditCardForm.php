@@ -16,13 +16,13 @@ class CreditCardForm
                     ->required()
                     ->maxLength(255)
                     ->placeholder('e.g. RBC Visa, Scotia Mastercard')
-                    ->helperText('A short label you use to tell your cards apart.'),
+                    ->helperText('The name of the credit card.'),
 
                 TextInput::make('currency')
                     ->required()
                     ->maxLength(3)
                     ->default('USD')
-                    ->helperText('ISO 4217 code. Locked after creation — changing it would break every balance on this card.')
+                    ->helperText('All currency must be in USD. It is locked after creation — since changing it would break every balance on this card.')
                     ->disabled(),
 
                 TextInput::make('credit_limit')
