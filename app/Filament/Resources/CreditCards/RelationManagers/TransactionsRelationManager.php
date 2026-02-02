@@ -125,10 +125,10 @@ class TransactionsRelationManager extends RelationManager
                     ->tooltip('Bank or card issuer reference number.'),
             ])
             ->defaultSort('transacted_at', 'desc')
-            ->headerActions([
+            ->toolbarActions([
                 CreateAction::make(),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
             ]);
     }
