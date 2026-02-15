@@ -1,59 +1,190 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# AntonBudgetApp
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A personal finance application for tracking credit cards and managing monthly budgets. Built with Laravel 12 and Filament v5, it combines a credit card transaction ledger with a full-featured budget module that tracks projected vs. live income and expenses.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Credit Cards
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Multi-card management** — Add and manage multiple credit cards with name, currency, credit limit, and open date.
+- **Transaction ledger** — Record charges, fees, payments, and refunds per card with date, description, amount, type, and status.
+- **Status tracking** — Transactions can be Pending (unconfirmed) or Posted (confirmed).
+- **Balance calculations** — Per-card and portfolio-wide totals for:
+  - **Posted balance** — Confirmed charges
+  - **Pending charges** — Awaiting confirmation
+  - **True balance** — What you owe (posted + pending)
+  - **Available credit** — Remaining credit before limit
+- **Dashboard quick-add** — Add transactions from the dashboard without navigating to a card.
+- **Portfolio overview** — Aggregate totals across all cards on the dashboard.
 
-## Learning Laravel
+### Budget Module
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- **Monthly budgets** — One budget per calendar month with recurring and one-off expenses.
+- **Expense templates** — Recurring templates (e.g. mortgage, groceries) that auto-populate new months.
+- **Categories** — Color-coded categories (Housing, Family, Transport, etc.) for grouping expenses.
+- **Projected vs. live tracking** — Two parallel views:
+  - **Projected** — Planned income and budgeted expenses.
+  - **Live** — Actual income and what you still owe.
+- **Income buckets** — Multiple income sources per month:
+  - **Projected income** — Planned (e.g. salary).
+  - **Live income** — Actual cash (e.g. bank balance, cash in hand).
+- **Expense management** — Per-month line items with:
+  - Budgeted amount
+  - Paid amount (updated as you pay)
+  - Remainder (budgeted − paid)
+  - Category badges
+  - Pay button to record payments
+- **Stats** — Six metrics per month:
+  - Proj. Income, Proj. Expenses, Proj. Remainder
+  - Live Income, Payment Due, Live Remainder
+- **Dashboard widget** — Budget overview for the current month with quick link to full budget.
+- **Sorting** — Sort expenses by unpaid amount or original order.
+- **One-off expenses** — Add ad-hoc expenses that are not recurring.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Tech Stack
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+| Layer | Technology |
+|-------|------------|
+| Framework | Laravel 12 |
+| Admin UI | Filament v5 |
+| Frontend | Livewire, Alpine.js, Tailwind CSS v4 |
+| PHP | 8.2+ |
+| Testing | Pest 4 |
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Project Structure
 
-## Contributing
+```
+app/
+├── Filament/
+│   ├── Pages/
+│   │   └── Dashboard.php
+│   ├── Resources/
+│   │   ├── Budget/           # Budget module resources
+│   │   │   ├── BudgetCategoryResource.php
+│   │   │   ├── BudgetExpenseTemplateResource.php
+│   │   │   ├── BudgetMonthResource.php
+│   │   │   ├── Pages/
+│   │   │   ├── RelationManagers/
+│   │   │   │   ├── LineItemsRelationManager.php
+│   │   │   │   ├── ProjectedIncomeRelationManager.php
+│   │   │   │   └── LiveIncomeRelationManager.php
+│   │   │   ├── Schemas/
+│   │   │   ├── Tables/
+│   │   │   └── Widgets/
+│   │   └── CreditCards/
+│   │       ├── CreditCardResource.php
+│   │       ├── RelationManagers/
+│   │       │   └── TransactionsRelationManager.php
+│   │       ├── Schemas/
+│   │       └── Tables/
+│   └── Widgets/
+│       ├── AllCardsOverviewWidget.php
+│       ├── BudgetOverviewWidget.php
+│       └── CardSummaryTableWidget.php
+├── Models/
+│   ├── BudgetCategory.php
+│   ├── BudgetExpenseTemplate.php
+│   ├── BudgetMonth.php
+│   ├── BudgetLineItem.php
+│   ├── BudgetIncomeEntry.php
+│   ├── CreditCard.php
+│   └── CardTransaction.php
+└── Helpers/
+    └── Money.php
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Getting Started
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Prerequisites
 
-## Security Vulnerabilities
+- PHP 8.2+
+- Composer
+- Node.js & npm
+- SQLite (or MySQL/PostgreSQL)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Installation
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd Credit_Card_Transaction_Ledger_App
+
+# Install dependencies
+composer install
+npm install
+
+# Environment setup
+cp .env.example .env
+php artisan key:generate
+
+# Database
+php artisan migrate --force
+
+# Optional: seed sample budget data
+php artisan db:seed --class=BudgetSeeder
+
+# Build assets
+npm run build
+```
+
+### Development
+
+```bash
+# Run all dev services (server, queue, logs, vite)
+composer run dev
+
+# Or individually:
+php artisan serve
+npm run dev
+```
+
+With Laravel Herd, the app is available at `https://credit-card-transaction-ledger-app.test`.
+
+---
+
+## Key Concepts
+
+### Currency
+
+- **Credit cards** — Use the card's currency (e.g. USD).
+- **Budget** — Uses **TTD** (Trinidad and Tobago Dollars).
+
+### Budget Projected vs. Live
+
+| Metric | Definition |
+|--------|------------|
+| **Projected Income** | Sum of planned income entries (`is_live = false`) |
+| **Projected Expenses** | Sum of all `budgeted_amount` on expense line items |
+| **Projected Remainder** | Projected Income − Projected Expenses |
+| **Live Income** | Sum of actual income entries (`is_live = true`) |
+| **Payment Due** | Sum of (budgeted − paid) per expense — what you still owe |
+| **Live Remainder** | Live Income − Payment Due |
+
+### Creating a New Month
+
+1. Go to **Budget → Monthly Budgets**.
+2. Click **New Month**.
+3. Choose month/year.
+4. The system creates the month and copies all active recurring templates.
+
+---
+
+## Testing
+
+```bash
+php artisan test --compact
+```
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT License. See [LICENSE](LICENSE) for details.
