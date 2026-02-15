@@ -27,6 +27,7 @@ class CreditCardPanelPanelProvider extends PanelProvider
             ->default()
             ->id('creditCardPanel')
             ->path('creditCardPanel')
+            ->readOnlyRelationManagersOnResourceViewPagesByDefault(false)
             ->login()
             ->colors([
                 'primary' => Color::Amber,

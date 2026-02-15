@@ -33,9 +33,25 @@ class Money
         $value = (float) $amount;
 
         if ($value < 0) {
-            return '-$' . number_format(abs($value), 2);
+            return '-$'.number_format(abs($value), 2);
         }
 
-        return '$' . number_format($value, 2);
+        return '$'.number_format($value, 2);
+    }
+
+    /**
+     * Format a TTD (Trinidad & Tobago dollar) amount as a display string.
+     *
+     * TTD uses the same symbol ($) and format as USD.
+     *
+     * Examples:
+     *   Money::formatTTD(1500)    → '$1,500.00'
+     *   Money::formatTTD(456.13)  → '$456.13'
+     *   Money::formatTTD(0)       → '$0.00'
+     *   Money::formatTTD(-200)    → '-$200.00'
+     */
+    public static function formatTTD(float|int|string $amount): string
+    {
+        return self::format($amount);
     }
 }

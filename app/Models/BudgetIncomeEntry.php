@@ -19,6 +19,7 @@ class BudgetIncomeEntry extends Model
         'type',
         'amount',
         'notes',
+        'is_live',
     ];
 
     /**

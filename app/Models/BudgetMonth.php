@@ -45,38 +45,62 @@ class BudgetMonth extends Model
 
     /* ─── Computed Accessors ─── */
     //
-    // All six methods issue a fresh DB query so they always reflect the
+    // All methods issue a fresh DB query so they always reflect the
     // current state of the database, even if the relation is already loaded.
     // This is intentional — the stats widget relies on accurate live values.
 
-    public function totalBudgeted(): float
+    // ── Projected track ──────────────────────────────────────────────────────
+
+    /** Sum of all projected income buckets (is_live = false) */
+    public function projectedIncome(): float
+    {
+        return (float) $this->incomeEntries()
+            ->where('is_live', false)
+            ->sum('amount');
+    }
+
+    /** Sum of all budgeted_amount across line items */
+    public function projectedExpenses(): float
     {
         return (float) $this->lineItems()->sum('budgeted_amount');
     }
 
-    public function totalPaid(): float
+    /** Projected Income − Projected Expenses */
+    public function projectedRemainder(): float
+    {
+        return $this->projectedIncome() - $this->projectedExpenses();
+    }
+
+    // ── Live track ────────────────────────────────────────────────────────────
+
+    /** Sum of all live income buckets (is_live = true) */
+    public function liveIncome(): float
+    {
+        return (float) $this->incomeEntries()
+            ->where('is_live', true)
+            ->sum('amount');
+    }
+
+    /** Sum of all paid_amount across line items */
+    public function liveExpenses(): float
     {
         return (float) $this->lineItems()->sum('paid_amount');
     }
 
-    public function totalRemainder(): float
+    /** Live Income − Payment Due (what you still owe) */
+    public function liveRemainder(): float
     {
-        return $this->totalBudgeted() - $this->totalPaid();
+        return $this->liveIncome() - $this->paymentDue();
     }
 
-    public function totalIncome(): float
-    {
-        return (float) $this->incomeEntries()->sum('amount');
-    }
+    // ── Shared ────────────────────────────────────────────────────────────────
 
-    public function surplus(): float
+    /** Sum of (budgeted − paid) per line item — what is still owed */
+    public function paymentDue(): float
     {
-        return $this->totalIncome() - $this->totalBudgeted();
-    }
-
-    public function actualSurplus(): float
-    {
-        return $this->totalIncome() - $this->totalPaid();
+        return (float) ($this->lineItems()
+            ->selectRaw('SUM(budgeted_amount - paid_amount) as due')
+            ->value('due') ?? 0);
     }
 
     /* ─── Factory Method ─── */
