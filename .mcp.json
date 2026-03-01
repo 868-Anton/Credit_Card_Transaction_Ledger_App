@@ -13,7 +13,7 @@
                 "/Applications/Herd.app/Contents/Resources/herd-mcp.phar"
             ],
             "env": {
-                "SITE_PATH": "/Users/ttrg6/Herd/Credit_Card_Transaction_Ledger_App"
+                "SITE_PATH": "/Users/ttrg6/Herd/Working Station/Credit_Card_Transaction_Ledger_App"
             }
         }
     }

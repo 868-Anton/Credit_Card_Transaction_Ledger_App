@@ -9,6 +9,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class AllCardsOverviewWidget extends BaseWidget
 {
+    protected ?string $heading = 'Credit Card Summary';
+
     protected function getStats(): array
     {
         $cards = CreditCard::all();

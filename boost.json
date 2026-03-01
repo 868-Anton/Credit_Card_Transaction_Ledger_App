@@ -8,7 +8,8 @@
     "herd_mcp": true,
     "mcp": true,
     "packages": [
-        "filament/filament"
+        "filament/filament",
+        "filament/blueprint"
     ],
     "sail": false,
     "skills": [
