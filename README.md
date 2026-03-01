@@ -1,6 +1,6 @@
 # AntonBudgetApp
 
-A personal finance application for tracking credit cards and managing monthly budgets. Built with Laravel 12 and Filament v5, it combines a credit card transaction ledger with a full-featured budget module that tracks projected vs. live income and expenses.
+A personal finance application for tracking credit cards, managing monthly budgets, and recording rental income. Built with Laravel 12 and Filament v5, it combines a credit card transaction ledger, a full-featured budget module that tracks projected vs. live income and expenses, and a rental invoice module for generating receipts.
 
 ---
 
@@ -16,8 +16,16 @@ A personal finance application for tracking credit cards and managing monthly bu
   - **Pending charges** — Awaiting confirmation
   - **True balance** — What you owe (posted + pending)
   - **Available credit** — Remaining credit before limit
-- **Dashboard quick-add** — Add transactions from the dashboard without navigating to a card.
 - **Portfolio overview** — Aggregate totals across all cards on the dashboard.
+
+### Rental Invoices
+
+- **Invoice management** — Create and manage rental invoices with tenant details, dates, and amounts.
+- **Landlord details** — Configurable default landlord info (name, address, phone, email) via `config/rental.php`.
+- **Prepopulated fields** — Tenant name and description (e.g. "Monthly rent for March") auto-filled based on invoice date.
+- **Status tracking** — Paid, Unpaid, or Overdue.
+- **PDF receipts** — Generate and download PDF receipts for each invoice.
+- **Money formatting** — Consistent currency display using the app's `Money` helper.
 
 ### Budget Module
 
@@ -39,7 +47,7 @@ A personal finance application for tracking credit cards and managing monthly bu
 - **Stats** — Six metrics per month:
   - Proj. Income, Proj. Expenses, Proj. Remainder
   - Live Income, Payment Due, Live Remainder
-- **Dashboard widget** — Budget overview for the current month with quick link to full budget.
+- **Dashboard widget** — Budget overview for the latest budget month with quick link to full budget.
 - **Sorting** — Sort expenses by unpaid amount or original order.
 - **One-off expenses** — Add ad-hoc expenses that are not recurring.
 
@@ -77,16 +85,24 @@ app/
 │   │   │   ├── Schemas/
 │   │   │   ├── Tables/
 │   │   │   └── Widgets/
-│   │   └── CreditCards/
-│   │       ├── CreditCardResource.php
-│   │       ├── RelationManagers/
-│   │       │   └── TransactionsRelationManager.php
+│   │   ├── CreditCards/
+│   │   │   ├── CreditCardResource.php
+│   │   │   ├── RelationManagers/
+│   │   │   │   └── TransactionsRelationManager.php
+│   │   │   ├── Schemas/
+│   │   │   └── Tables/
+│   │   └── RentalInvoices/
+│   │       ├── RentalInvoiceResource.php
+│   │       ├── Pages/
 │   │       ├── Schemas/
+│   │       │   └── RentalInvoiceForm.php
 │   │       └── Tables/
 │   └── Widgets/
 │       ├── AllCardsOverviewWidget.php
 │       ├── BudgetOverviewWidget.php
 │       └── CardSummaryTableWidget.php
+├── Enums/
+│   └── RentalInvoiceStatus.php
 ├── Models/
 │   ├── BudgetCategory.php
 │   ├── BudgetExpenseTemplate.php
@@ -94,7 +110,8 @@ app/
 │   ├── BudgetLineItem.php
 │   ├── BudgetIncomeEntry.php
 │   ├── CreditCard.php
-│   └── CardTransaction.php
+│   ├── CardTransaction.php
+│   └── RentalInvoice.php
 └── Helpers/
     └── Money.php
 ```
