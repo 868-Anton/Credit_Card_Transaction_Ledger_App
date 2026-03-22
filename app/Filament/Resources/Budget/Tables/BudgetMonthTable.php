@@ -24,22 +24,26 @@ class BudgetMonthTable
                 TextColumn::make('projected_income')
                     ->label('Projected Income (TTD)')
                     ->getStateUsing(fn ($record) => Money::formatTTD($record->projectedIncome()))
+                    ->searchable(false)
                     ->sortable(false),
 
                 TextColumn::make('projected_expenses')
                     ->label('Projected Expenses (TTD)')
                     ->getStateUsing(fn ($record) => Money::formatTTD($record->projectedExpenses()))
+                    ->searchable(false)
                     ->sortable(false),
 
                 TextColumn::make('live_expenses')
                     ->label('Live Expenses (TTD)')
                     ->getStateUsing(fn ($record) => Money::formatTTD($record->liveExpenses()))
+                    ->searchable(false)
                     ->sortable(false),
 
                 TextColumn::make('live_remainder')
                     ->label('Live Remainder')
                     ->getStateUsing(fn ($record) => Money::formatTTD($record->liveRemainder()))
                     ->color(fn ($record) => $record->liveRemainder() >= 0 ? 'success' : 'danger')
+                    ->searchable(false)
                     ->sortable(false),
 
                 TextColumn::make('line_items_count')

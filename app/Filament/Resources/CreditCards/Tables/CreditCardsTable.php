@@ -39,6 +39,7 @@ class CreditCardsTable
                     ->getStateUsing(fn (CreditCard $record): string => $record->trueBalance())
                     ->formatStateUsing(fn (string $state): string => Money::format($state))
                     ->color(fn (string $state): string => (float) $state > 0 ? 'danger' : 'success')
+                    ->searchable(false)
                     ->tooltip('Posted + Pending. The real amount you owe on this card right now.'),
 
                 TextColumn::make('availableCredit')
@@ -47,6 +48,7 @@ class CreditCardsTable
                     ->getStateUsing(fn (CreditCard $record): string => $record->availableCredit())
                     ->formatStateUsing(fn (string $state): string => Money::format($state))
                     ->color(fn (string $state): string => (float) $state < 0 ? 'danger' : ((float) $state < 500 ? 'warning' : 'success'))
+                    ->searchable(false)
                     ->tooltip('Credit limit minus TRUE Balance. Negative = over limit.'),
 
                 TextColumn::make('opened_at')

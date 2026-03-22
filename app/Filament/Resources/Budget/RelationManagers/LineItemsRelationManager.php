@@ -86,6 +86,7 @@ class LineItemsRelationManager extends RelationManager
 
                         return 'danger';
                     })
+                    ->searchable(false)
                     ->sortable(false),
 
             ])

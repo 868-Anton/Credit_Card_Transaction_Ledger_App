@@ -41,7 +41,8 @@ class CardSummaryTableWidget extends BaseWidget
                     )
                     ->formatStateUsing(
                         fn (string $state): string => Money::format($state)
-                    ),
+                    )
+                    ->searchable(false),
 
                 Tables\Columns\TextColumn::make('pendingCharges')
                     ->label('Pending')
@@ -52,7 +53,8 @@ class CardSummaryTableWidget extends BaseWidget
                     ->formatStateUsing(
                         fn (string $state): string => Money::format($state)
                     )
-                    ->color('warning'),
+                    ->color('warning')
+                    ->searchable(false),
 
                 Tables\Columns\TextColumn::make('trueBalance')
                     ->label('TRUE Balance')
@@ -65,7 +67,8 @@ class CardSummaryTableWidget extends BaseWidget
                     )
                     ->color(
                         fn (string $state): string => (float) $state > 0 ? 'danger' : 'success'
-                    ),
+                    )
+                    ->searchable(false),
 
                 Tables\Columns\TextColumn::make('availableCredit')
                     ->label('Available')
@@ -80,16 +83,17 @@ class CardSummaryTableWidget extends BaseWidget
                         fn (string $state): string => (float) $state < 0
                           ? 'danger'
                           : ((float) $state < 500 ? 'warning' : 'success')
-                    ),
+                    )
+                    ->searchable(false),
             ])
             ->defaultSort('name')
             ->actions([
-            \Filament\Actions\Action::make('edit')
+                \Filament\Actions\Action::make('edit')
                     ->label('Edit')
                     ->icon('heroicon-o-pencil-square')
                     ->url(
                         fn (CreditCard $record): string => route('filament.creditCardPanel.resources.credit-cards.edit', ['record' => $record])
                     ),
-        ]);
+            ]);
     }
 }
